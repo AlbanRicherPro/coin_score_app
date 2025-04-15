@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'my_home_page.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -52,12 +51,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     ]).animate(_controller);
     _controller.forward();
 
-    Timer(const Duration(seconds: 2), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const MyHomePage(title: 'Flutter Demo Home Page')),
-      );
+    Timer(const Duration(milliseconds: 1800), () {
+      Navigator.of(context).pushReplacementNamed('/home');
     });
-
   }
 
   @override

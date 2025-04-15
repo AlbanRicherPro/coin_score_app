@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'my_home_page.dart';
 import 'splash_screen.dart';
+import 'my_home_page.dart'; // Assuming MyHomePage is defined in my_home_page.dart
+import 'help_page.dart';
+import 'new_game_page.dart'; // Assuming NewGamePage is defined in new_game_page.dart
 
 void main() {
   runApp(const MyApp());
@@ -13,26 +15,48 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Coin Score App',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff4b9fc6)),
       ),
-      home: const SplashScreen(),
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/',
+      onGenerateRoute: (settings) {
+        WidgetBuilder builder;
+        switch (settings.name) {
+          case '/':
+            builder = (context) => const SplashScreen();
+            break;
+          case '/home':
+            builder = (context) => const MyHomePage();
+            break;
+          case '/help':
+            builder = (context) => const HelpPage();
+            break;
+          case '/new_game':
+            builder = (context) => const NewGamePage();
+            break;
+          default:
+            builder = (context) => const Scaffold(
+              body: Center(child: Text('Page not found')),
+            );
+        }
+        return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => builder(context),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final curved = CurvedAnimation(parent: animation, curve: Curves.easeInOutCubic);
+            return FadeTransition(
+              opacity: curved,
+              child: ScaleTransition(
+                scale: Tween<double>(begin: 0.98, end: 1.0).animate(curved),
+                child: child,
+              ),
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 700),
+          settings: settings,
+        );
+      },
     );
   }
 }
