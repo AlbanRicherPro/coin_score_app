@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'new_game_page.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -99,7 +100,37 @@ class _MyHomePageState extends State<MyHomePage> {
                     elevation: 8,
                   ),
                   onPressed: () {
-                    // TODO: Add action for Historique
+                    if (Theme.of(context).platform == TargetPlatform.iOS) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return CupertinoAlertDialog(
+                            content: const Text('Bientôt disponible...'),
+                            actions: [
+                              CupertinoDialogAction(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            content: const Text('Bientôt disponible...'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
                   },
                   child: const Text('Historique'),
                 ),

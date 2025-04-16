@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'modern_number_input.dart';
 import 'modern_switch.dart';
+import 'player_names_page.dart';
 
 class NewGamePage extends StatefulWidget {
   const NewGamePage({super.key});
@@ -23,17 +24,8 @@ class _NewGamePageState extends State<NewGamePage> {
       backgroundColor: primaryColor,
       appBar: AppBar(
         backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          color: Colors.white,
-          icon: const Icon(Icons.home),
-          tooltip: 'Accueil',
-          onPressed: () {
-            Navigator.of(
-              context,
-            ).pushNamedAndRemoveUntil('/home', (route) => false);
-          },
-        ),
         title: const Text(
           'Nouvelle partie',
           style: TextStyle(
@@ -117,7 +109,13 @@ class _NewGamePageState extends State<NewGamePage> {
                     elevation: 8,
                   ),
                   onPressed: () {
-                    // TODO: Continue to next step
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder:
+                            (context) =>
+                                PlayerNamesPage(numPlayers: numPlayers),
+                      ),
+                    );
                   },
                   child: const Text('Continuer'),
                 ),
