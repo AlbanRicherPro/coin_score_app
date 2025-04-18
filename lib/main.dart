@@ -5,6 +5,7 @@ import 'help_page.dart';
 import 'new_game_page.dart'; // Assuming NewGamePage is defined in new_game_page.dart
 import 'player_names_page.dart';
 import 'player_points_page.dart';
+import 'game_state.dart';
 
 void main() {
   runApp(const MyApp());
@@ -39,18 +40,25 @@ class MyApp extends StatelessWidget {
             builder = (context) => const NewGamePage();
             break;
           case '/player_names':
-            final args = settings.arguments as Map<String, dynamic>?;
-            final int numPlayers = args != null && args['numPlayers'] != null ? args['numPlayers'] as int : 4;
-            builder = (context) => PlayerNamesPage(numPlayers: numPlayers);
+            builder = (context) {
+              final args = settings.arguments;
+              if (args is GameState) {
+                return PlayerNamesPage(gameState: args);
+              }
+              // fallback: show error or default page
+              return const Scaffold(body: Center(child: Text('Erreur: état du jeu manquant')));
+            };
             break;
           case '/player_points':
-            final args = settings.arguments as Map<String, dynamic>?;
-            final playerNames = (args?['playerNames'] as List<dynamic>?)?.cast<String>() ?? [];
-            final playerPoints = (args?['playerPoints'] as List<dynamic>?)?.cast<int>() ?? [];
-            builder = (context) => PlayerPointsPage(
-              playerNames: playerNames,
-              playerPoints: playerPoints,
-            );
+            builder = (context) {
+              final args = settings.arguments;
+              if (args is GameState) {
+                return PlayerPointsPage(gameState: args);
+              } else {
+                // fallback: show error or default page
+              return const Scaffold(body: Center(child: Text('Erreur: état du jeu manquant')));
+              }
+            };
             break;
           default:
             builder = (context) => const Scaffold(

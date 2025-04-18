@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'modern_number_input.dart';
 import 'modern_switch.dart';
+import 'game_state.dart';
 
 class NewGamePage extends StatefulWidget {
   const NewGamePage({super.key});
@@ -10,9 +11,12 @@ class NewGamePage extends StatefulWidget {
 }
 
 class _NewGamePageState extends State<NewGamePage> {
-  int numPlayers = 4;
-  int initialBank = 150;
-  int modeIndex = 0; // 0: PIOU PIOU, 1: ULTRA
+  GameState gameState = GameState(
+    playerNames: List.filled(4, '', growable: true),
+    playerPoints: List.filled(4, 0, growable: true),
+    chosenPoint: 150, // or your chosen point logic
+    mode: 0,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -64,21 +68,28 @@ class _NewGamePageState extends State<NewGamePage> {
               SizedBox(height: screenHeight * 0.05),
               ModernNumberInput(
                 label: 'Nombre de joueurs',
-                value: numPlayers,
+                value: gameState.playerNames.length,
                 min: 2,
                 max: 8,
                 step: 1,
-                onChanged: (v) => setState(() => numPlayers = v),
+                onChanged:
+                    (v) => setState(() {
+                      if (v < gameState.playerNames.length) {
+                        gameState.playerNames.removeLast();
+                      } else {
+                        gameState.playerNames.add('');
+                      }
+                    }),
                 primaryColor: primaryColor,
               ),
               const SizedBox(height: 32),
               ModernNumberInput(
                 label: 'Capital de départ (points)',
-                value: initialBank,
+                value: gameState.chosenPoint,
                 min: 10,
                 max: 1000,
                 step: 10,
-                onChanged: (v) => setState(() => initialBank = v),
+                onChanged: (v) => setState(() => gameState.chosenPoint = v),
                 primaryColor: primaryColor,
               ),
               const SizedBox(height: 32),
@@ -86,8 +97,8 @@ class _NewGamePageState extends State<NewGamePage> {
               ModernSwitch(
                 label: 'Mode de jeu',
                 options: const ['PIOU PIOU', 'ULTRA'],
-                selectedIndex: modeIndex,
-                onChanged: (idx) => setState(() => modeIndex = idx),
+                selectedIndex: gameState.mode,
+                onChanged: (idx) => setState(() => gameState.mode = idx),
                 primaryColor: primaryColor,
               ),
               SizedBox(height: screenHeight * 0.1),
@@ -108,10 +119,9 @@ class _NewGamePageState extends State<NewGamePage> {
                     elevation: 8,
                   ),
                   onPressed: () {
-                    Navigator.of(context).pushNamed(
-                      '/player_names',
-                      arguments: {'numPlayers': numPlayers},
-                    );
+                    Navigator.of(context)
+                        .pushNamed('/player_names', arguments: gameState)
+                        .then((_) async => {setState(() {})});
                   },
                   child: const Text('Continuer'),
                 ),

@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
+import 'game_state.dart';
 
 class PlayerPointsPage extends StatefulWidget {
-  final List<String> playerNames;
-  final List<int> playerPoints;
+  final GameState gameState;
 
-  const PlayerPointsPage({
-    super.key,
-    required this.playerNames,
-    required this.playerPoints,
-  });
+  const PlayerPointsPage({super.key, required this.gameState});
 
   @override
   _PlayerPointsPageState createState() => _PlayerPointsPageState();
@@ -56,7 +52,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
             const SizedBox(height: 16),
             Expanded(
               child: ListView.builder(
-                itemCount: widget.playerNames.length,
+                itemCount: widget.gameState.playerNames.length,
                 padding: const EdgeInsets.only(bottom: 16),
                 itemBuilder: (context, index) {
                   return Container(
@@ -66,15 +62,14 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                       label: ConstrainedBox(
                         constraints: BoxConstraints(
                           minWidth: 50,
-                          maxWidth:
-                              selectedIndex == index ? double.infinity : 50,
+                          maxWidth: selectedIndex == index ? double.infinity : 50,
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.playerNames[index],
+                              widget.gameState.playerNames[index],
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w500,
@@ -82,14 +77,11 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${widget.playerPoints[index]}',
+                              widget.gameState.playerPoints[index].toString(),
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color:
-                                    selectedIndex == index
-                                        ? const Color(0xff4b9fc6)
-                                        : Colors.white,
+                                color: selectedIndex == index ? const Color(0xff4b9fc6) : Colors.white,
                               ),
                             ),
                           ],
@@ -99,10 +91,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                       selectedColor: Colors.white,
                       backgroundColor: Colors.grey.shade400,
                       labelStyle: TextStyle(
-                        color:
-                            selectedIndex == index
-                                ? const Color(0xff4b9fc6)
-                                : Colors.white,
+                        color: selectedIndex == index ? const Color(0xff4b9fc6) : Colors.white,
                       ),
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.only(
@@ -117,7 +106,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                         });
                       },
                       elevation: 8,
-                      shadowColor: Colors.black.withOpacity(0.15),
+                      shadowColor: Colors.black.withAlpha(15),
                     ),
                   );
                 },
