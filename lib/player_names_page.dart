@@ -1,9 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class PlayerNamesPage extends StatefulWidget {
   final int numPlayers;
-  const PlayerNamesPage({Key? key, required this.numPlayers}) : super(key: key);
+  const PlayerNamesPage({super.key, required this.numPlayers});
 
   @override
   State<PlayerNamesPage> createState() => _PlayerNamesPageState();
@@ -230,37 +229,15 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
                   ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      if (Theme.of(context).platform == TargetPlatform.iOS) {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return CupertinoAlertDialog(
-                              content: const Text('Bientôt disponible...'),
-                              actions: [
-                                CupertinoDialogAction(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              content: const Text('Bientôt disponible...'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }
+                      final playerNames = _controllers.map((c) => c.text.trim()).toList();
+                      final playerPoints = List<int>.filled(_numPlayers, 0);
+                      Navigator.of(context).pushNamed(
+                        '/player_points',
+                        arguments: {
+                          'playerNames': playerNames,
+                          'playerPoints': playerPoints,
+                        },
+                      );
                     }
                   },
                 ),

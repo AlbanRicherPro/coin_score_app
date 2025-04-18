@@ -4,6 +4,7 @@ import 'my_home_page.dart'; // Assuming MyHomePage is defined in my_home_page.da
 import 'help_page.dart';
 import 'new_game_page.dart'; // Assuming NewGamePage is defined in new_game_page.dart
 import 'player_names_page.dart';
+import 'player_points_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,6 +42,15 @@ class MyApp extends StatelessWidget {
             final args = settings.arguments as Map<String, dynamic>?;
             final int numPlayers = args != null && args['numPlayers'] != null ? args['numPlayers'] as int : 4;
             builder = (context) => PlayerNamesPage(numPlayers: numPlayers);
+            break;
+          case '/player_points':
+            final args = settings.arguments as Map<String, dynamic>?;
+            final playerNames = (args?['playerNames'] as List<dynamic>?)?.cast<String>() ?? [];
+            final playerPoints = (args?['playerPoints'] as List<dynamic>?)?.cast<int>() ?? [];
+            builder = (context) => PlayerPointsPage(
+              playerNames: playerNames,
+              playerPoints: playerPoints,
+            );
             break;
           default:
             builder = (context) => const Scaffold(
