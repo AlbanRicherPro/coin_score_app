@@ -34,6 +34,7 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = const Color(0xff4b9fc6);
+    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: primaryColor,
       appBar: AppBar(
@@ -60,6 +61,8 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
         ],
       ),
       body: Stack(
+        fit: StackFit.expand,
+        alignment: Alignment.topCenter,
         children: [
           SafeArea(
             child: Padding(
@@ -67,7 +70,7 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
               child: Column(
                 children: [
                   Image.asset('assets/images/splash.png', height: 80),
-                  const SizedBox(height: 16),
+                   SizedBox(height: screenHeight * 0.05),
                   Expanded(
                     child: Form(
                       key: _formKey,
@@ -88,11 +91,11 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
                                       Container(
                                         width: 40,
                                         height: 40,
-                                        margin: const EdgeInsets.only(left: 4, right: 4),
+                                        margin: const EdgeInsets.only(left: 4, right: 8),
                                         child: Material(
                                           color: Colors.white,
                                           shape: const CircleBorder(),
-                                          child: const Icon(Icons.person, color: Color(0xff4b9fc6)),
+                                          child:  Icon(Icons.person, color: primaryColor),
                                         ),
                                       ),
                                       Expanded(
@@ -106,19 +109,20 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
                                             fillColor: Colors.white,
                                             labelText: 'Joueur ${index + 1}',
                                             floatingLabelBehavior: FloatingLabelBehavior.never,
-                                            labelStyle: const TextStyle(
-                                              color: Color(0xff4b9fc6),
+                                            labelStyle:  TextStyle(
+                                              color: primaryColor,
                                               fontWeight: FontWeight.w300,
                                               fontSize: 16,
                                               fontStyle: FontStyle.italic,
                                             ),
                                             border: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(16),
+                                              borderSide: BorderSide.none,
                                             ),
                                           ),
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 18,
-                                            color: Color(0xff4b9fc6),
+                                            color: primaryColor,
                                           ),
                                           validator: (value) {
                                             if (value == null || value.trim().isEmpty) {
@@ -136,12 +140,12 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
                                       Container(
                                         width: 40,
                                         height: 40,
-                                        margin: const EdgeInsets.only(left: 4, right: 4),
+                                        margin: const EdgeInsets.only(left: 8, right: 4),
                                         child: Material(
                                           color: Colors.white,
                                           shape: const CircleBorder(),
                                           child: IconButton(
-                                            icon: const Icon(Icons.delete, color: Color(0xff4b9fc6)),
+                                            icon:  Icon(Icons.delete, color: primaryColor),
                                             tooltip: 'Effacer',
                                             onPressed: () {
                                               setState(() {
@@ -163,25 +167,25 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
                                       SizedBox(
                                         height: 55,
                                         child: ElevatedButton.icon(
-                                          icon: const Icon(
+                                          icon:  Icon(
                                             Icons.person_add,
-                                            color: Color(0xff4b9fc6),
+                                            color: primaryColor,
                                           ),
-                                          label: const Text(
+                                          label: Text(
                                             'Ajouter un joueur',
                                             style: TextStyle(
-                                              color: Color(0xff4b9fc6),
+                                              color: primaryColor,
                                               fontSize: 18,
                                               fontWeight: FontWeight.w600,
                                             ),
                                           ),
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: Colors.white,
-                                            foregroundColor: Color(0xff4b9fc6),
+                                            foregroundColor: primaryColor,
                                             shape: RoundedRectangleBorder(
                                               borderRadius: BorderRadius.circular(30),
                                             ),
-                                            side: const BorderSide(color: Color(0xff4b9fc6), width: 2),
+                                            side: BorderSide.none,
                                             elevation: 4,
                                           ),
                                           onPressed: widget.gameState.players.length < 8 ? () {
@@ -218,11 +222,10 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
               child: SizedBox(
                 height: 60,
                 child: ElevatedButton.icon(
-                  icon: const Icon(Icons.arrow_forward),
                   label: const Text('Continuer'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    foregroundColor: const Color(0xff4b9fc6),
+                    foregroundColor: primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
