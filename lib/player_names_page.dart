@@ -1,4 +1,5 @@
 import 'package:coin_score_app/game_state.dart';
+import 'package:coin_score_app/player_state.dart';
 import 'package:flutter/material.dart';
 
 class PlayerNamesPage extends StatefulWidget {
@@ -17,14 +18,14 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
   void initState() {
     super.initState();
     _controllers = List.generate(
-      widget.gameState.playerNames.length,
-      (index) => TextEditingController(text: widget.gameState.playerNames[index]),
+      widget.gameState.players.length,
+      (index) => TextEditingController(text: widget.gameState.players[index].name),
     );
   }
 
   @override
   void dispose() {
-    for (int i = 0; i < widget.gameState.playerNames.length; i++) {
+    for (int i = 0; i < widget.gameState.players.length; i++) {
       _controllers[i].dispose();
     }
     super.dispose();
@@ -72,14 +73,14 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
                       key: _formKey,
                       child: ListView.builder(
                         padding: const EdgeInsets.only(bottom: 40), // Prevents overlap with button
-                        itemCount: widget.gameState.playerNames.length + 1,
+                        itemCount: widget.gameState.players.length + 1,
                         itemBuilder: (context, index) {
-                          return Padding(
+                          return Padding( 
                             padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (index < widget.gameState.playerNames.length)
+                                if (index < widget.gameState.players.length)
                                   Row(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -127,7 +128,7 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
                                           },
                                           onChanged: (value) {
                                             setState(() {
-                                              widget.gameState.playerNames[index] = value;
+                                              widget.gameState.players[index].name = value;
                                             });
                                           },
                                         ),
@@ -144,7 +145,7 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
                                             tooltip: 'Effacer',
                                             onPressed: () {
                                               setState(() {
-                                                widget.gameState.playerNames.removeAt(index);
+                                                widget.gameState.players.removeAt(index);
                                                 _controllers[index].dispose();
                                                 _controllers.removeAt(index);
                                               });
@@ -154,7 +155,7 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
                                       ),
                                     ],
                                   ),
-                                if (index == widget.gameState.playerNames.length)
+                                if (index == widget.gameState.players.length)
                                   Row(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -183,10 +184,10 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
                                             side: const BorderSide(color: Color(0xff4b9fc6), width: 2),
                                             elevation: 4,
                                           ),
-                                          onPressed: widget.gameState.playerNames.length < 8 ? () {
+                                          onPressed: widget.gameState.players.length < 8 ? () {
                                             setState(() {
                                               _controllers.add(TextEditingController());
-                                              widget.gameState.playerNames.add('');
+                                              widget.gameState.players.add(PlayerState(name: '', points: widget.gameState.initialPoints));
                                             });
                                           } : null,
                                         ),

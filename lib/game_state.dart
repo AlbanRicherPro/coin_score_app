@@ -1,29 +1,13 @@
+import 'package:coin_score_app/player_state.dart';
+
 class GameState {
-  final List<String> playerNames;
-  final List<int> playerPoints;
-  int chosenPoint;
+  final List<PlayerState> players;
+  int initialPoints;
   int mode;
-  // Add more fields as needed (e.g., selectedIndex, etc.)
 
   GameState({
-    required this.playerNames,
-    required this.playerPoints,
-    required this.chosenPoint,
-    required this.mode
-    // Add other fields here
+    required this.players,
+    required this.initialPoints,
+    required this.mode,
   });
-
-  GameState copyWith({
-    List<String>? playerNames,
-    List<int>? playerPoints,
-    int? chosenPoint,
-    int? mode
-  }) {
-    return GameState(
-      playerNames: playerNames ?? this.playerNames,
-      playerPoints: playerPoints ?? this.playerPoints,
-      chosenPoint: chosenPoint ?? this.chosenPoint,
-      mode: mode ?? this.mode
-    );
-  }
 }

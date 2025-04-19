@@ -1,3 +1,4 @@
+import 'package:coin_score_app/player_state.dart';
 import 'package:flutter/material.dart';
 import 'modern_number_input.dart';
 import 'modern_switch.dart';
@@ -12,9 +13,8 @@ class NewGamePage extends StatefulWidget {
 
 class _NewGamePageState extends State<NewGamePage> {
   GameState gameState = GameState(
-    playerNames: List.filled(4, '', growable: true),
-    playerPoints: List.filled(4, 0, growable: true),
-    chosenPoint: 150, // or your chosen point logic
+    players: List.filled(4, PlayerState(name: '', points: 150), growable: true),
+    initialPoints: 150, // or your chosen point logic
     mode: 0,
   );
 
@@ -68,16 +68,16 @@ class _NewGamePageState extends State<NewGamePage> {
               SizedBox(height: screenHeight * 0.05),
               ModernNumberInput(
                 label: 'Nombre de joueurs',
-                value: gameState.playerNames.length,
+                value: gameState.players.length,
                 min: 2,
                 max: 8,
                 step: 1,
                 onChanged:
                     (v) => setState(() {
-                      if (v < gameState.playerNames.length) {
-                        gameState.playerNames.removeLast();
+                      if (v < gameState.players.length) {
+                        gameState.players.removeLast();
                       } else {
-                        gameState.playerNames.add('');
+                        gameState.players.add(PlayerState(name: '', points: gameState.initialPoints));
                       }
                     }),
                 primaryColor: primaryColor,
@@ -85,11 +85,16 @@ class _NewGamePageState extends State<NewGamePage> {
               const SizedBox(height: 32),
               ModernNumberInput(
                 label: 'Capital de départ (points)',
-                value: gameState.chosenPoint,
+                value: gameState.initialPoints,
                 min: 10,
                 max: 1000,
                 step: 10,
-                onChanged: (v) => setState(() => gameState.chosenPoint = v),
+                onChanged: (v) => setState(() {
+                  gameState.initialPoints = v;
+                  for (var player in gameState.players) {
+                    player.points = v;
+                  }
+                }),
                 primaryColor: primaryColor,
               ),
               const SizedBox(height: 32),

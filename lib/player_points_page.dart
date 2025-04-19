@@ -12,6 +12,7 @@ class PlayerPointsPage extends StatefulWidget {
 
 class _PlayerPointsPageState extends State<PlayerPointsPage> {
   int selectedIndex = 0;
+  int round = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +22,8 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
         backgroundColor: const Color(0xff4b9fc6),
         foregroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
-          'Scores',
+        title: Text(
+          'Manche $round',
           style: TextStyle(
             color: Colors.white,
             fontSize: 28,
@@ -52,7 +53,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
             const SizedBox(height: 16),
             Expanded(
               child: ListView.builder(
-                itemCount: widget.gameState.playerNames.length,
+                itemCount: widget.gameState.players.length,
                 padding: const EdgeInsets.only(bottom: 16),
                 itemBuilder: (context, index) {
                   return Container(
@@ -69,7 +70,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.gameState.playerNames[index],
+                              widget.gameState.players[index].name,
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w500,
@@ -77,7 +78,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              widget.gameState.playerPoints[index].toString(),
+                              widget.gameState.players[index].points.toString(),
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
