@@ -53,42 +53,12 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
           top: 16,
           bottom: 0,
         ),
-        child: Column(
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Selected cards row (displayed at the top)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: Wrap(
-                spacing: 8,
-                children: selectedCards.isEmpty ? [const SizedBox(width: 48, height: 64)] : selectedCards
-                    .map((cardNum) => GameCard(number: cardNum, onTap: null, isSelected: false))
-                    .toList(),
-              ),
-            ),
-            const SizedBox(height: 8),
-            // Game cards row (1-10)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: Wrap(
-                spacing: 8,
-                children: List.generate(10, (i) {
-                  int cardNum = i + 1;
-                  return GameCard(
-                    number: cardNum,
-                    onTap: () {
-                      setState(() {
-                        selectedCards.add(cardNum);
-                      });
-                    },
-                    isSelected: false,
-                  );
-                }),
-              ),
-            ),
-            const SizedBox(height: 8),
-            // Existing payer names list
-            Expanded(
+            // Player names list with fixed width
+            SizedBox(
+              width: 135,
               child: ListView.builder(
                 itemCount: widget.gameState.players.length,
                 padding: const EdgeInsets.only(bottom: 16),
@@ -131,6 +101,29 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                     ),
                   );
                 },
+              ),
+            ),
+            // Cards panel takes remaining width
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  alignment: WrapAlignment.center,
+                  children: List.generate(10, (i) {
+                    int cardNum = i + 1;
+                    return GameCard(
+                      number: cardNum,
+                      onTap: () {
+                        setState(() {
+                          selectedCards.add(cardNum);
+                        });
+                      },
+                      isSelected: false,
+                    );
+                  }),
+                ),
               ),
             ),
           ],
