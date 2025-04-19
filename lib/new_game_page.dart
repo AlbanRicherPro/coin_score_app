@@ -13,7 +13,7 @@ class NewGamePage extends StatefulWidget {
 
 class _NewGamePageState extends State<NewGamePage> {
   GameState gameState = GameState(
-    players: List.filled(4, PlayerState(name: '', points: 150), growable: true),
+    players: List.generate(4, (index) => PlayerState(name: '', points: 150)),
     initialPoints: 150, // or your chosen point logic
     mode: 0,
   );

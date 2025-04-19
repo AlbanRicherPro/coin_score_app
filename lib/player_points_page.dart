@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'game_state.dart';
+import 'widgets/game_card.dart';
+import 'widgets/defiling_text.dart';
 
 class PlayerPointsPage extends StatefulWidget {
   final GameState gameState;
@@ -13,6 +15,9 @@ class PlayerPointsPage extends StatefulWidget {
 class _PlayerPointsPageState extends State<PlayerPointsPage> {
   int selectedIndex = 0;
   int round = 1;
+
+  // Add state for selected cards
+  List<int> selectedCards = [];
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +54,40 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
           bottom: 0,
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 16),
+            // Selected cards row (displayed at the top)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Wrap(
+                spacing: 8,
+                children: selectedCards.isEmpty ? [const SizedBox(width: 48, height: 64)] : selectedCards
+                    .map((cardNum) => GameCard(number: cardNum, onTap: null, isSelected: false))
+                    .toList(),
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Game cards row (1-10)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Wrap(
+                spacing: 8,
+                children: List.generate(10, (i) {
+                  int cardNum = i + 1;
+                  return GameCard(
+                    number: cardNum,
+                    onTap: () {
+                      setState(() {
+                        selectedCards.add(cardNum);
+                      });
+                    },
+                    isSelected: false,
+                  );
+                }),
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Existing payer names list
             Expanded(
               child: ListView.builder(
                 itemCount: widget.gameState.players.length,
@@ -60,32 +97,15 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                     margin: const EdgeInsets.symmetric(vertical: 5),
                     alignment: Alignment.centerLeft,
                     child: ChoiceChip(
-                      label: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minWidth: 50,
-                          maxWidth: selectedIndex == index ? double.infinity : 50,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.gameState.players[index].name,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              widget.gameState.players[index].points.toString(),
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: selectedIndex == index ? const Color(0xff4b9fc6) : Colors.white,
-                              ),
-                            ),
-                          ],
+                      label: SizedBox(
+                        width: 100,
+                        child: DefilingText(
+                          text: widget.gameState.players[index].name,
+                          enabled: selectedIndex == index,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                       selected: selectedIndex == index,
