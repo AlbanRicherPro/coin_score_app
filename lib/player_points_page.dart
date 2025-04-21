@@ -156,6 +156,24 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
               ],
             ),
           ),
+          Row(
+            children: [
+              SizedBox(width: 150,),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    'Cartes disponibles',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 8),
           // Main content row: player names and available cards
           Expanded(
             child: Padding(
@@ -255,37 +273,32 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Cartes disponibles',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        alignment: WrapAlignment.center,
+                        children: List.generate(10, (i) {
+                          int cardNum = i + 1;
+                          return GameCard(
+                            card: GameCardModel(
+                              points: cardNum,
+                              icon: Image.asset('assets/images/$cardNum.png'),
                             ),
-                          ),
-                          SizedBox(height: 8),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            alignment: WrapAlignment.center,
-                            children: List.generate(10, (i) {
-                              int cardNum = i + 1;
-                              return GameCard(
-                                card: GameCardModel(points: cardNum, icon: Image.asset('assets/images/$cardNum.png')),
-                                onTap: () {
-                                  setState(() {
-                                    currentPlayer.selectedCards
-                                        .add(GameCardModel(points: cardNum, icon: Image.asset('assets/images/$cardNum.png')));
-                                  });
-                                },
-                                isSelected: false,
-                              );
-                            }),
-                          ),
-                        ],
+                            onTap: () {
+                              setState(() {
+                                currentPlayer.selectedCards.add(
+                                  GameCardModel(
+                                    points: cardNum,
+                                    icon: Image.asset(
+                                      'assets/images/$cardNum.png',
+                                    ),
+                                  ),
+                                );
+                              });
+                            },
+                            isSelected: false,
+                          );
+                        }),
                       ),
                     ),
                   ),
