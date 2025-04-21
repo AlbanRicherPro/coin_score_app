@@ -9,30 +9,40 @@ class GameCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 48,
-        height: 64,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.amber : Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.black26, width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(2, 2),
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(8),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: onTap,
+        splashColor: Colors.amber.withValues(alpha: 0.2),
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        focusColor: Colors.transparent,
+        child: Ink(
+          width: 48,
+          height: 64,
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.amber : Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.black26, width: 2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 4,
+                offset: Offset(2, 2),
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              number.toString(),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
-          ],
-        ),
-        child: Text(
-          number.toString(),
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
           ),
         ),
       ),
