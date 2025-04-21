@@ -66,47 +66,51 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                 SizedBox(height: 8),
                 Wrap(
                   crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 8,
-                  runSpacing: 8,
                   alignment: WrapAlignment.center,
                   children: (selectedCards.isNotEmpty)
-                      ? selectedCards.map((cardNum) => Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            GameCard(
-                              number: cardNum,
-                              isSelected: true,
-                            ),
-                            Positioned(
-                              top: -8,
-                              right: -8,
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedCards.remove(cardNum);
-                                  });
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black26,
-                                        blurRadius: 2,
-                                      ),
-                                    ],
-                                  ),
-                                  padding: EdgeInsets.all(2),
-                                  child: Icon(
-                                    Icons.close,
-                                    size: 16,
-                                    color: Colors.white,
+                      ? selectedCards.map((cardNum) => SizedBox(
+                          width: 60,
+                          height: 76,
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Center(
+                                child: GameCard(
+                                  number: cardNum,
+                                  isSelected: true,
+                                ),
+                              ),
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedCards.remove(cardNum);
+                                    });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black26,
+                                          blurRadius: 2,
+                                        ),
+                                      ],
+                                    ),
+                                    padding: EdgeInsets.all(2),
+                                    child: Icon(
+                                      Icons.close,
+                                      size: 16,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         )).toList()
                       : [const SizedBox(
                           height: 64,
