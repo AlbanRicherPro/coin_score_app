@@ -15,13 +15,11 @@ class PlayerPointsPage extends StatefulWidget {
 
 class _PlayerPointsPageState extends State<PlayerPointsPage> {
   int selectedIndex = 0;
-  int round = 1;
 
   @override
   Widget build(BuildContext context) {
     // Get selected cards for the current player
     final currentPlayer = widget.gameState.players[selectedIndex];
-    final selectedCards = currentPlayer.selectedCards;
 
     return Scaffold(
       backgroundColor: const Color(0xff4b9fc6),
@@ -30,7 +28,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
         foregroundColor: Colors.white,
         elevation: 0,
         title: Text(
-          'Manche $round',
+          'Manche ${widget.gameState.round}',
           style: TextStyle(
             color: Colors.white,
             fontSize: 28,
@@ -76,13 +74,13 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (selectedCards.isNotEmpty)
+                        if (currentPlayer.selectedCards.isNotEmpty)
                           Expanded(
                             child: Wrap(
                               crossAxisAlignment: WrapCrossAlignment.center,
                               alignment: WrapAlignment.center,
                               children:
-                                  selectedCards
+                                  currentPlayer.selectedCards
                                       .map(
                                         (cardObj) => SizedBox(
                                           width: 60,
@@ -138,13 +136,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Center(
-                              child: Text(
-                                selectedCards.isEmpty
-                                    ? '0'
-                                    : selectedCards
-                                        .map((c) => c.points)
-                                        .reduce((value, element) => value + element)
-                                        .toString(),
+                              child: Text(currentPlayer.selectedPoints.toString(),
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 26,
@@ -228,7 +220,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                                     Expanded(
                                       child: Center(
                                         child: Text(
-                                          '${widget.gameState.players[index].selectedCards.isEmpty ? 0 : widget.gameState.players[index].selectedCards.map((c) => c.points).reduce((value, element) => value + element)}',
+                                          '${widget.gameState.players[index].selectedPoints}',
                                           style: TextStyle(
                                             fontSize: 20,
                                             color:
@@ -339,11 +331,42 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                     elevation: 8,
                     textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      round += 1;
-                      // Optionally: reset per-round state here
-                    });
+                  onPressed: () async {
+                    final selected = await showModalBottomSheet<int>(
+                      context: context,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                      ),
+                      isScrollControlled: true,
+                      builder: (context) {
+                        return SafeArea(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(height: 16),
+                              const Text(
+                                'Qui a osé couiner ?',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              ...List.generate(widget.gameState.players.length, (idx) => ListTile(
+                                title: Center(child: Text(widget.gameState.players[idx].name)),
+                                onTap: () => Navigator.of(context).pop(idx),
+                              )),
+                              const SizedBox(height: 16),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                    if (selected != null) {
+                      setState(() {
+                        widget.gameState.round += 1;
+                      });
+                    }
                   },
                 ),
               ),

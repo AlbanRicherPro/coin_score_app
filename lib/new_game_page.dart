@@ -16,6 +16,7 @@ class _NewGamePageState extends State<NewGamePage> {
     players: List.generate(4, (index) => PlayerState(name: '', points: 150)),
     initialPoints: 150, // or your chosen point logic
     mode: 0,
+    round: 1,
   );
 
   @override
