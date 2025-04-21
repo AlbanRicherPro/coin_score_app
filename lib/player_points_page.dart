@@ -51,12 +51,15 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
         children: [
           // Selected cards section with label
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+            padding: const EdgeInsets.symmetric(
+              vertical: 16.0,
+              horizontal: 24.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'Cartes restantes du joueur',
+                  'Points du joueur sélectionné',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -64,64 +67,87 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                   ),
                 ),
                 SizedBox(height: 8),
-                Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  alignment: WrapAlignment.center,
-                  children: (selectedCards.isNotEmpty)
-                      ? selectedCards.map((cardNum) => SizedBox(
-                          width: 60,
-                          height: 76,
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              Center(
-                                child: GameCard(
-                                  number: cardNum,
-                                  isSelected: true,
-                                ),
-                              ),
-                              Positioned(
-                                top: 0,
-                                right: 0,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      selectedCards.remove(cardNum);
-                                    });
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black26,
-                                          blurRadius: 2,
-                                        ),
-                                      ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (selectedCards.isNotEmpty)
+                      Expanded(
+                        child: Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          alignment: WrapAlignment.center,
+                          children:
+                              selectedCards
+                                  .map(
+                                    (cardNum) => SizedBox(
+                                      width: 60,
+                                      height: 76,
+                                      child: Stack(
+                                        clipBehavior: Clip.none,
+                                        children: [
+                                          Center(
+                                            child: GameCard(
+                                              number: cardNum,
+                                              isSelected: true,
+                                            ),
+                                          ),
+                                          Positioned(
+                                            top: 0,
+                                            right: 0,
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  selectedCards.remove(cardNum);
+                                                });
+                                              },
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.red,
+                                                  shape: BoxShape.circle,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black26,
+                                                      blurRadius: 2,
+                                                    ),
+                                                  ],
+                                                ),
+                                                padding: EdgeInsets.all(2),
+                                                child: Icon(
+                                                  Icons.close,
+                                                  size: 16,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    padding: EdgeInsets.all(2),
-                                    child: Icon(
-                                      Icons.close,
-                                      size: 16,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )).toList()
-                      : [const SizedBox(
-                          height: 64,
-                          child: Center(
-                            child: Text('Aucune',style: TextStyle(
+                                  )
+                                  .toList(),
+                        ),
+                      ),
+                    SizedBox(
+                      width: 70,
+                      height: 76,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Text(
+                            selectedCards.isEmpty
+                                ? '0'
+                                : selectedCards
+                                    .reduce((value, element) => value + element)
+                                    .toString(),
+                            style: TextStyle(
                               color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.normal,
-                            )),
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        )],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -164,7 +190,10 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                                   '${widget.gameState.players[index].points} pts',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: selectedIndex == index ? const Color(0xff4b9fc6) : Colors.white,
+                                    color:
+                                        selectedIndex == index
+                                            ? const Color(0xff4b9fc6)
+                                            : Colors.white,
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
@@ -174,7 +203,10 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                             selectedColor: Colors.white,
                             backgroundColor: Colors.grey.shade400,
                             labelStyle: TextStyle(
-                              color: selectedIndex == index ? const Color(0xff4b9fc6) : Colors.white,
+                              color:
+                                  selectedIndex == index
+                                      ? const Color(0xff4b9fc6)
+                                      : Colors.white,
                             ),
                             shape: const RoundedRectangleBorder(
                               borderRadius: BorderRadius.only(
