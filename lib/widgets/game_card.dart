@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import '../models/game_card_model.dart';
 
 class GameCard extends StatelessWidget {
-  final int number;
+  final GameCardModel card;
   final VoidCallback? onTap;
   final bool isSelected;
 
-  const GameCard({Key? key, required this.number, this.onTap, this.isSelected = false}) : super(key: key);
+  const GameCard({super.key, required this.card, this.onTap, this.isSelected = false});
 
   @override
   Widget build(BuildContext context) {
@@ -16,16 +17,15 @@ class GameCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         onTap: onTap,
         splashColor: Colors.amber.withValues(alpha: 0.2),
-        highlightColor: Colors.transparent,
+        highlightColor: Colors.amber.withValues(alpha: 0.2),
         hoverColor: Colors.transparent,
         focusColor: Colors.transparent,
         child: Ink(
           width: 48,
           height: 64,
           decoration: BoxDecoration(
-            color: isSelected ? Colors.amber : Colors.white,
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.black26, width: 2),
             boxShadow: [
               BoxShadow(
                 color: Colors.black26,
@@ -35,13 +35,9 @@ class GameCard extends StatelessWidget {
             ],
           ),
           child: Center(
-            child: Text(
-              number.toString(),
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+            child: Ink.image(
+              image: card.icon.image,
+              fit: BoxFit.contain,
             ),
           ),
         ),

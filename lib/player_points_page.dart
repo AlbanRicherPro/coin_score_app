@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'game_state.dart';
 import 'widgets/game_card.dart';
 import 'widgets/defiling_text.dart';
+import 'models/game_card_model.dart';
 
 class PlayerPointsPage extends StatefulWidget {
   final GameState gameState;
@@ -9,18 +10,19 @@ class PlayerPointsPage extends StatefulWidget {
   const PlayerPointsPage({super.key, required this.gameState});
 
   @override
-  _PlayerPointsPageState createState() => _PlayerPointsPageState();
+  State<PlayerPointsPage> createState() => _PlayerPointsPageState();
 }
 
 class _PlayerPointsPageState extends State<PlayerPointsPage> {
   int selectedIndex = 0;
   int round = 1;
 
-  // Add state for selected cards
-  List<int> selectedCards = [];
-
   @override
   Widget build(BuildContext context) {
+    // Get selected cards for the current player
+    final currentPlayer = widget.gameState.players[selectedIndex];
+    final selectedCards = currentPlayer.selectedCards;
+
     return Scaffold(
       backgroundColor: const Color(0xff4b9fc6),
       appBar: AppBar(
@@ -78,7 +80,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                           children:
                               selectedCards
                                   .map(
-                                    (cardNum) => SizedBox(
+                                    (cardObj) => SizedBox(
                                       width: 60,
                                       height: 76,
                                       child: Stack(
@@ -86,7 +88,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                                         children: [
                                           Center(
                                             child: GameCard(
-                                              number: cardNum,
+                                              card: cardObj,
                                               isSelected: true,
                                             ),
                                           ),
@@ -96,7 +98,8 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                                             child: GestureDetector(
                                               onTap: () {
                                                 setState(() {
-                                                  selectedCards.remove(cardNum);
+                                                  currentPlayer.selectedCards
+                                                      .remove(cardObj);
                                                 });
                                               },
                                               child: Container(
@@ -136,6 +139,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                             selectedCards.isEmpty
                                 ? '0'
                                 : selectedCards
+                                    .map((c) => c.points)
                                     .reduce((value, element) => value + element)
                                     .toString(),
                             style: TextStyle(
@@ -161,7 +165,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                 children: [
                   // Player names list with fixed width
                   SizedBox(
-                    width: 135,
+                    width: 150,
                     child: ListView.builder(
                       itemCount: widget.gameState.players.length,
                       padding: const EdgeInsets.only(bottom: 16),
@@ -186,16 +190,36 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                                   ),
                                 ),
                                 SizedBox(height: 4),
-                                Text(
-                                  '${widget.gameState.players[index].points} pts',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color:
-                                        selectedIndex == index
-                                            ? const Color(0xff4b9fc6)
-                                            : Colors.white,
-                                    fontWeight: FontWeight.w400,
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      '${widget.gameState.players[index].points} pts',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color:
+                                            selectedIndex == index
+                                                ? const Color(0xff4b9fc6)
+                                                : Colors.white,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Expanded(
+                                      child: Center(
+                                        child: Text(
+                                          '${widget.gameState.players[index].selectedCards.isEmpty ? 0 : widget.gameState.players[index].selectedCards.map((c) => c.points).reduce((value, element) => value + element)}',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            color:
+                                                selectedIndex == index
+                                                    ? const Color(0xff4b9fc6)
+                                                    : Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -250,10 +274,11 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                             children: List.generate(10, (i) {
                               int cardNum = i + 1;
                               return GameCard(
-                                number: cardNum,
+                                card: GameCardModel(points: cardNum, icon: Image.asset('assets/images/$cardNum.png')),
                                 onTap: () {
                                   setState(() {
-                                    selectedCards.add(cardNum);
+                                    currentPlayer.selectedCards
+                                        .add(GameCardModel(points: cardNum, icon: Image.asset('assets/images/$cardNum.png')));
                                   });
                                 },
                                 isSelected: false,

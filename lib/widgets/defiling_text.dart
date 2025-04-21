@@ -5,7 +5,7 @@ class DefilingText extends StatefulWidget {
   final bool enabled;
   final TextStyle? style;
 
-  const DefilingText({Key? key, required this.text, required this.enabled, this.style}) : super(key: key);
+  const DefilingText({super.key, required this.text, required this.enabled, this.style});
 
   @override
   State<DefilingText> createState() => _DefilingTextState();
