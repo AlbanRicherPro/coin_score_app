@@ -33,7 +33,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
     return Scaffold(
       backgroundColor: const Color(0xff4b9fc6),
       appBar: AppBar(
-        backgroundColor: const Color(0xff4b9fc6),
+        backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         elevation: 0,
         title: Text(
@@ -44,13 +44,83 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        centerTitle: true,
         actions: [
+          if (widget.gameState.round > 1)
+            IconButton(
+              icon: const Icon(Icons.history),
+              color: Colors.white,
+              tooltip: 'Manche précédente',
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  backgroundColor: Colors.white,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
+                  ),
+                  builder: (context) {
+                    return Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Annuler la manche ?',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Voulez-vous vraiment annuler la manche actuelle et revenir à la précédente ?',
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 24),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey.shade300,
+                                  foregroundColor: Colors.black,
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('Non'),
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xff4b9fc6),
+                                  foregroundColor: Colors.white,
+                                ),
+                                onPressed: () {
+                                  _previousRound();
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('Oui'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           IconButton(
             icon: const Icon(Icons.help_outline),
             color: Colors.white,
             tooltip: 'Aide',
             onPressed: () {
-              Navigator.of(context).pushNamed('/help');
+              Navigator.of(
+                context,
+              ).pushNamed('/help', arguments: widget.gameState);
             },
           ),
         ],
@@ -427,7 +497,9 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                                 repeat: false,
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                ),
                                 child: Text(
                                   'Jolie couinade ${_playerFinishingTheRound?.name} !',
                                   style: TextStyle(
@@ -451,7 +523,9 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                                 repeat: false,
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                ),
                                 child: Text(
                                   'Dommage ${_playerFinishingTheRound?.name} ! Couinade ratée !',
                                   style: TextStyle(
@@ -471,23 +545,34 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
     );
   }
 
-  void _onNextRoundPlayerTap(PlayerState player) {
+  void _previousRound() {
     setState(() {
-      _playerFinishingTheRound = player;
-      widget.gameState.round += 1;
-      if (player != _findPlayerWithLowerPoints()) {
+      widget.gameState.round -= 1;
+      for (var player in widget.gameState.players) {
+        player.selectedCards.clear();
+      }
+    });
+  }
+
+  void _onNextRoundPlayerTap(PlayerState finisher) {
+    setState(() {
+      _playerFinishingTheRound = finisher;
+      if (finisher != _findPlayerWithLowerPoints()) {
         _isSelectedPlayerWinRound = false;
-        player.points -= _findBiggestPoints();
+        finisher.points -= _findBiggestPoints();
       } else {
         _isSelectedPlayerWinRound = true;
         for (var player in widget.gameState.players) {
-          if (player != player) {
+          if (finisher != player) {
             player.points -= player.selectedPoints;
           }
         }
       }
       for (var player in widget.gameState.players) {
         player.selectedCards.clear();
+        if (player.points <= 0) {
+          widget.gameState.endGame = true;
+        }
       }
       _showOverlay = true;
     });
@@ -496,9 +581,22 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
         setState(() {
           _showOverlay = false;
           _playerFinishingTheRound = null;
+          _selectedIndex = 0;
+          if (widget.gameState.endGame) {
+            _endGame();
+          } else {
+            widget.gameState.round += 1;
+          }
         });
       }
     });
+  }
+
+  void _endGame() async {
+    await Navigator.of(
+      context,
+    ).pushNamed('/end_game', arguments: widget.gameState);
+    _previousRound();
   }
 
   PlayerState _findPlayerWithLowerPoints() {

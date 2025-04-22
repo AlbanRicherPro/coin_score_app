@@ -5,11 +5,13 @@ class GameState {
   int initialPoints;
   int mode;
   int round;
+  bool endGame;
 
   GameState({
     required this.players,
     required this.initialPoints,
     required this.mode,
     required this.round,
+    this.endGame = false,
   });
 }

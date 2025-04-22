@@ -6,6 +6,7 @@ import 'new_game_page.dart'; // Assuming NewGamePage is defined in new_game_page
 import 'player_names_page.dart';
 import 'player_points_page.dart';
 import 'game_state.dart';
+import 'end_game_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -57,6 +58,16 @@ class MyApp extends StatelessWidget {
               } else {
                 // fallback: show error or default page
               return const Scaffold(body: Center(child: Text('Erreur: état du jeu manquant')));
+              }
+            };
+            break;
+          case '/end_game':
+            builder = (context) {
+              final args = settings.arguments;
+              if (args is GameState) {
+                return EndGamePage(gameState: args);
+              } else {
+                return const Scaffold(body: Center(child: Text('Erreur: état du jeu manquant')));
               }
             };
             break;
