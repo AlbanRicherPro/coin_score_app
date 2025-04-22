@@ -1,8 +1,12 @@
+import 'dart:math';
+
+import 'package:coin_score_app/player_state.dart';
 import 'package:flutter/material.dart';
 import 'game_state.dart';
 import 'widgets/game_card.dart';
 import 'widgets/defiling_text.dart';
 import 'models/game_card_model.dart';
+import 'package:lottie/lottie.dart';
 
 class PlayerPointsPage extends StatefulWidget {
   final GameState gameState;
@@ -14,12 +18,17 @@ class PlayerPointsPage extends StatefulWidget {
 }
 
 class _PlayerPointsPageState extends State<PlayerPointsPage> {
-  int selectedIndex = 0;
+  int _selectedIndex = 0;
+  bool _showOverlay = false;
+  bool _isSelectedPlayerWinRound = false;
+  PlayerState? _playerFinishingTheRound;
 
   @override
   Widget build(BuildContext context) {
     // Get selected cards for the current player
-    final currentPlayer = widget.gameState.players[selectedIndex];
+    final currentPlayer = widget.gameState.players[_selectedIndex];
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: const Color(0xff4b9fc6),
@@ -100,27 +109,29 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                                                 child: GestureDetector(
                                                   onTap: () {
                                                     setState(() {
-                                                      currentPlayer.selectedCards.remove(cardObj);
+                                                      currentPlayer
+                                                          .selectedCards
+                                                          .remove(cardObj);
                                                     });
                                                   },
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.red,
-                                                  shape: BoxShape.circle,
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.black26,
-                                                      blurRadius: 2,
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.red,
+                                                      shape: BoxShape.circle,
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Colors.black26,
+                                                          blurRadius: 2,
+                                                        ),
+                                                      ],
                                                     ),
-                                                  ],
-                                                ),
-                                                padding: EdgeInsets.all(2),
-                                                child: Icon(
-                                                  Icons.close,
-                                                  size: 16,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
+                                                    padding: EdgeInsets.all(2),
+                                                    child: Icon(
+                                                      Icons.close,
+                                                      size: 16,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                             ],
@@ -136,7 +147,8 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Center(
-                              child: Text(currentPlayer.selectedPoints.toString(),
+                              child: Text(
+                                currentPlayer.selectedPoints.toString(),
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 26,
@@ -153,7 +165,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
               ),
               Row(
                 children: [
-                  SizedBox(width: 150,),
+                  SizedBox(width: 150),
                   Expanded(
                     child: Center(
                       child: Text(
@@ -194,71 +206,77 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                                     SizedBox(
                                       width: 100,
                                       child: DefilingText(
-                                        text: widget.gameState.players[index].name,
-                                        enabled: selectedIndex == index,
-                                    style: const TextStyle(
+                                        text:
+                                            widget
+                                                .gameState
+                                                .players[index]
+                                                .name,
+                                        enabled: _selectedIndex == index,
+                                        style: const TextStyle(
                                           fontSize: 18,
-                                      fontWeight: FontWeight.w500,
+                                          fontWeight: FontWeight.w500,
                                         ),
                                       ),
                                     ),
-                                SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    Text(
-                                      '${widget.gameState.players[index].points} pts',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color:
-                                            selectedIndex == index
-                                                ? const Color(0xff4b9fc6)
-                                                : Colors.white,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                    SizedBox(width: 8),
-                                    Expanded(
-                                      child: Center(
-                                        child: Text(
-                                          '${widget.gameState.players[index].selectedPoints}',
+                                    SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          '${widget.gameState.players[index].points} pts',
                                           style: TextStyle(
-                                            fontSize: 20,
+                                            fontSize: 14,
                                             color:
-                                                selectedIndex == index
+                                                _selectedIndex == index
                                                     ? const Color(0xff4b9fc6)
                                                     : Colors.white,
-                                            fontWeight: FontWeight.bold,
+                                            fontWeight: FontWeight.w400,
+                                          ),
                                         ),
-                                      ),
-                                      ),
-                                    ),
-                                  ],
+                                        SizedBox(width: 8),
+                                        Expanded(
+                                          child: Center(
+                                            child: Text(
+                                              '${widget.gameState.players[index].selectedPoints}',
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color:
+                                                    _selectedIndex == index
+                                                        ? const Color(
+                                                          0xff4b9fc6,
+                                                        )
+                                                        : Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
-                                selected: selectedIndex == index,
-                            selectedColor: Colors.white,
-                            backgroundColor: Colors.grey.shade400,
-                            labelStyle: TextStyle(
-                              color:
-                                  selectedIndex == index
-                                      ? const Color(0xff4b9fc6)
-                                      : Colors.white,
-                            ),
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(20),
-                                bottomRight: Radius.circular(20),
-                              ),
-                            ),
-                            showCheckmark: false,
-                            onSelected: (selected) {
+                                selected: _selectedIndex == index,
+                                selectedColor: Colors.white,
+                                backgroundColor: Colors.grey.shade400,
+                                labelStyle: TextStyle(
+                                  color:
+                                      _selectedIndex == index
+                                          ? const Color(0xff4b9fc6)
+                                          : Colors.white,
+                                ),
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(20),
+                                    bottomRight: Radius.circular(20),
+                                  ),
+                                ),
+                                showCheckmark: false,
+                                onSelected: (selected) {
                                   setState(() {
-                                    selectedIndex = index;
+                                    _selectedIndex = index;
                                   });
                                 },
-                            elevation: 8,
-                            shadowColor: Colors.black.withAlpha(15),
+                                elevation: 8,
+                                shadowColor: Colors.black.withAlpha(15),
                               ),
                             );
                           },
@@ -277,16 +295,18 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                               return GameCard(
                                 card: GameCardModel(
                                   points: cardNum,
-                                  icon: Image.asset('assets/images/$cardNum.png'),
+                                  icon: Image.asset(
+                                    'assets/images/$cardNum.png',
+                                  ),
                                 ),
                                 onTap: () {
                                   setState(() {
                                     currentPlayer.selectedCards.add(
                                       GameCardModel(
                                         points: cardNum,
-                                    icon: Image.asset(
-                                      'assets/images/$cardNum.png',
-                                    ),
+                                        icon: Image.asset(
+                                          'assets/images/$cardNum.png',
+                                        ),
                                       ),
                                     );
                                   });
@@ -327,15 +347,22 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
                     elevation: 8,
-                    textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    textStyle: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   onPressed: () async {
-                    final selected = await showModalBottomSheet<int>(
+                    final selected = await showModalBottomSheet<PlayerState>(
                       context: context,
                       shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(24),
+                        ),
                       ),
                       isScrollControlled: true,
                       builder: (context) {
@@ -352,10 +379,20 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                                 ),
                               ),
                               const SizedBox(height: 16),
-                              ...List.generate(widget.gameState.players.length, (idx) => ListTile(
-                                title: Center(child: Text(widget.gameState.players[idx].name)),
-                                onTap: () => Navigator.of(context).pop(idx),
-                              )),
+                              ...List.generate(
+                                widget.gameState.players.length,
+                                (idx) => ListTile(
+                                  title: Center(
+                                    child: Text(
+                                      widget.gameState.players[idx].name,
+                                    ),
+                                  ),
+                                  onTap:
+                                      () => Navigator.of(
+                                        context,
+                                      ).pop(widget.gameState.players[idx]),
+                                ),
+                              ),
                               const SizedBox(height: 16),
                             ],
                           ),
@@ -363,17 +400,116 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                       },
                     );
                     if (selected != null) {
-                      setState(() {
-                        widget.gameState.round += 1;
-                      });
+                      _onNextRoundPlayerTap(selected);
                     }
                   },
                 ),
               ),
             ),
           ),
+          // Overlay plein écran animé
+          if (_showOverlay)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withValues(alpha: 0.8),
+                child: Center(
+                  child:
+                      _isSelectedPlayerWinRound == true
+                          ? Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Lottie.asset(
+                                'assets/lottie/success.json',
+                                width: min(screenWidth, screenHeight) * 0.8,
+                                height: min(screenWidth, screenHeight) * 0.8,
+                                repeat: false,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Text(
+                                  'Jolie couinade ${_playerFinishingTheRound?.name} !',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 32,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
+                          )
+                          : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Lottie.asset(
+                                'assets/lottie/failure.json',
+                                width: min(screenWidth, screenHeight) * 0.8,
+                                height: min(screenWidth, screenHeight) * 0.8,
+                                repeat: false,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Text(
+                                  'Dommage ${_playerFinishingTheRound?.name} ! Couinade ratée !',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 32,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
+                          ),
+                ),
+              ),
+            ),
         ],
       ),
     );
+  }
+
+  void _onNextRoundPlayerTap(PlayerState player) {
+    setState(() {
+      _playerFinishingTheRound = player;
+      widget.gameState.round += 1;
+      if (player != _findPlayerWithLowerPoints()) {
+        _isSelectedPlayerWinRound = false;
+        player.points -= _findBiggestPoints();
+      } else {
+        _isSelectedPlayerWinRound = true;
+        for (var player in widget.gameState.players) {
+          if (player != player) {
+            player.points -= player.selectedPoints;
+          }
+        }
+      }
+      for (var player in widget.gameState.players) {
+        player.selectedCards.clear();
+      }
+      _showOverlay = true;
+    });
+    Future.delayed(Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _showOverlay = false;
+          _playerFinishingTheRound = null;
+        });
+      }
+    });
+  }
+
+  PlayerState _findPlayerWithLowerPoints() {
+    return widget.gameState.players.reduce(
+      (a, b) => a.selectedPoints < b.selectedPoints ? a : b,
+    );
+  }
+
+  int _findBiggestPoints() {
+    return widget.gameState.players
+        .reduce((a, b) => a.selectedPoints > b.selectedPoints ? a : b)
+        .selectedPoints;
   }
 }
