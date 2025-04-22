@@ -38,7 +38,13 @@ class MyApp extends StatelessWidget {
             builder = (context) => const HelpPage();
             break;
           case '/new_game':
-            builder = (context) => const NewGamePage();
+            builder = (context) {
+              final args = settings.arguments;
+              if (args is GameState) {
+                return NewGamePage(gameState: args);
+              }
+              return const NewGamePage();
+            };
             break;
           case '/player_names':
             builder = (context) {
@@ -47,7 +53,9 @@ class MyApp extends StatelessWidget {
                 return PlayerNamesPage(gameState: args);
               }
               // fallback: show error or default page
-              return const Scaffold(body: Center(child: Text('Erreur: état du jeu manquant')));
+              return const Scaffold(
+                body: Center(child: Text('Erreur: état du jeu manquant')),
+              );
             };
             break;
           case '/player_points':
@@ -57,7 +65,9 @@ class MyApp extends StatelessWidget {
                 return PlayerPointsPage(gameState: args);
               } else {
                 // fallback: show error or default page
-              return const Scaffold(body: Center(child: Text('Erreur: état du jeu manquant')));
+                return const Scaffold(
+                  body: Center(child: Text('Erreur: état du jeu manquant')),
+                );
               }
             };
             break;
@@ -67,19 +77,25 @@ class MyApp extends StatelessWidget {
               if (args is GameState) {
                 return EndGamePage(gameState: args);
               } else {
-                return const Scaffold(body: Center(child: Text('Erreur: état du jeu manquant')));
+                return const Scaffold(
+                  body: Center(child: Text('Erreur: état du jeu manquant')),
+                );
               }
             };
             break;
           default:
-            builder = (context) => const Scaffold(
-              body: Center(child: Text('Page not found')),
-            );
+            builder =
+                (context) =>
+                    const Scaffold(body: Center(child: Text('Page not found')));
         }
         return PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => builder(context),
+          pageBuilder:
+              (context, animation, secondaryAnimation) => builder(context),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            final curved = CurvedAnimation(parent: animation, curve: Curves.easeInOutCubic);
+            final curved = CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeInOutCubic,
+            );
             return FadeTransition(
               opacity: curved,
               child: ScaleTransition(

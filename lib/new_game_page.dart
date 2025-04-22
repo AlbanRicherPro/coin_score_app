@@ -5,19 +5,30 @@ import 'modern_switch.dart';
 import 'game_state.dart';
 
 class NewGamePage extends StatefulWidget {
-  const NewGamePage({super.key});
+  final GameState? gameState;
+  const NewGamePage({super.key, this.gameState});
 
   @override
   State<NewGamePage> createState() => _NewGamePageState();
 }
 
 class _NewGamePageState extends State<NewGamePage> {
-  GameState gameState = GameState(
-    players: List.generate(4, (index) => PlayerState(name: '', points: 150)),
-    initialPoints: 150, // or your chosen point logic
-    mode: 0,
-    round: 1,
-  );
+  late GameState _gameState;
+
+  @override
+  void initState() {
+    super.initState();
+    _gameState =
+        widget.gameState ??
+        GameState(
+          players: List.generate(
+            4,
+            (index) => PlayerState(name: '', points: 150),
+            growable: true,
+          ),
+          initialPoints: 150,
+        );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,48 +67,60 @@ class _NewGamePageState extends State<NewGamePage> {
         children: [
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 16, bottom: 50),
+              padding: const EdgeInsets.only(
+                left: 24.0,
+                right: 24.0,
+                top: 16,
+                bottom: 50,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Image.asset('assets/images/splash.png', height: 80),
-                   SizedBox(height: screenHeight * 0.05),
+                  SizedBox(height: screenHeight * 0.05),
                   ModernNumberInput(
                     label: 'Nombre de joueurs',
-                    value: gameState.players.length,
+                    value: _gameState.players.length,
                     min: 2,
                     max: 8,
                     step: 1,
-                    onChanged: (v) => setState(() {
-                      if (v < gameState.players.length) {
-                        gameState.players.removeLast();
-                      } else {
-                        gameState.players.add(PlayerState(name: '', points: gameState.initialPoints));
-                      }
-                    }),
+                    onChanged:
+                        (v) => setState(() {
+                          if (v < _gameState.players.length) {
+                            _gameState.players.removeLast();
+                          } else {
+                            _gameState.players.add(
+                              PlayerState(
+                                name: '',
+                                points: _gameState.initialPoints,
+                              ),
+                            );
+                          }
+                        }),
                     primaryColor: primaryColor,
                   ),
-                   SizedBox(height: screenHeight * 0.05),
+                  SizedBox(height: screenHeight * 0.05),
                   ModernNumberInput(
                     label: 'Capital de départ (points)',
-                    value: gameState.initialPoints,
+                    value: _gameState.initialPoints,
                     min: 10,
                     max: 1000,
                     step: 10,
-                    onChanged: (v) => setState(() {
-                      gameState.initialPoints = v;
-                      for (var player in gameState.players) {
-                        player.points = v;
-                      }
-                    }),
+                    onChanged:
+                        (v) => setState(() {
+                          _gameState.initialPoints = v;
+                          for (var player in _gameState.players) {
+                            player.points = v;
+                          }
+                        }),
                     primaryColor: primaryColor,
                   ),
-                   SizedBox(height: screenHeight * 0.05),
+                  SizedBox(height: screenHeight * 0.05),
                   ModernSwitch(
                     label: 'Mode de jeu',
                     options: const ['PIOU PIOU', 'ULTRA'],
-                    selectedIndex: gameState.mode,
-                    onChanged: (idx) => setState(() => gameState.mode = idx),
+                    selectedIndex: _gameState.mode,
+                    onChanged: (idx) => setState(() => _gameState.mode = idx),
                     primaryColor: primaryColor,
                   ),
                 ],
@@ -132,7 +155,7 @@ class _NewGamePageState extends State<NewGamePage> {
                   ),
                   onPressed: () {
                     Navigator.of(context)
-                        .pushNamed('/player_names', arguments: gameState)
+                        .pushNamed('/player_names', arguments: _gameState)
                         .then((_) async => {setState(() {})});
                   },
                 ),

@@ -422,6 +422,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                     ),
                     elevation: 8,
                     textStyle: const TextStyle(
+                      color: Color(0xff4b9fc6),
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),

@@ -10,8 +10,8 @@ class GameState {
   GameState({
     required this.players,
     required this.initialPoints,
-    required this.mode,
-    required this.round,
+    this.mode = 0,
+    this.round = 1,
     this.endGame = false,
   });
 }
