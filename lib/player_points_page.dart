@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:coin_score_app/player_state.dart';
+import 'package:coin_score_app/game_state.dart';
 import 'package:flutter/material.dart';
-import 'game_state.dart';
 import 'widgets/game_card.dart';
 import 'widgets/defiling_text.dart';
 import 'models/game_card_model.dart';
@@ -546,18 +546,10 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
     );
   }
 
-  void _previousRound() {
-    setState(() {
-      widget.gameState.round -= 1;
-      for (var player in widget.gameState.players) {
-        player.selectedCards.clear();
-      }
-    });
-  }
-
   void _onNextRoundPlayerTap(PlayerState finisher) {
     setState(() {
       _playerFinishingTheRound = finisher;
+      // First, mutate points
       if (finisher != _findPlayerWithLowerPoints()) {
         _isSelectedPlayerWinRound = false;
         finisher.points -= _findBiggestPoints();
@@ -568,6 +560,16 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
             player.points -= player.selectedPoints;
           }
         }
+      }
+      // Now, save round history for each player AFTER mutating points
+      for (var player in widget.gameState.players) {
+        player.roundHistory.add(PlayerRoundHistoryEntry(
+          round: widget.gameState.round,
+          finisher: player == finisher,
+          winRound: (player == finisher && _isSelectedPlayerWinRound) || (player != finisher && !_isSelectedPlayerWinRound),
+          currentPoint: player.points,
+          roundPoint: player.selectedPoints,
+        ));
       }
       for (var player in widget.gameState.players) {
         player.selectedCards.clear();
@@ -590,6 +592,19 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
           }
         });
       }
+    });
+  }
+
+  void _previousRound() {
+    setState(() {
+      for (var player in widget.gameState.players) {
+        if (player.roundHistory.isNotEmpty) {
+          var last = player.roundHistory.removeLast();
+          player.points = last.currentPoint;
+          player.selectedCards.clear();
+        }
+      }
+      widget.gameState.round = widget.gameState.round > 1 ? widget.gameState.round - 1 : 1;
     });
   }
 

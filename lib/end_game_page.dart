@@ -111,6 +111,31 @@ class EndGamePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
+            // Add a button to view the rounds history
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.history),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: const Color(0xff4b9fc6),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  elevation: 8,
+                ),
+                label: const Text('Historique des manches'),
+                onPressed: () {
+                  Navigator.of(
+                    context,
+                  ).pushNamed('/game_history', arguments: gameState);
+                },
+              ),
+            ),
           ],
         ),
       ),

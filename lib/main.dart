@@ -1,3 +1,4 @@
+import 'package:coin_score_app/rounds_history_page.dart';
 import 'package:flutter/material.dart';
 import 'splash_screen.dart';
 import 'my_home_page.dart'; // Assuming MyHomePage is defined in my_home_page.dart
@@ -76,6 +77,18 @@ class MyApp extends StatelessWidget {
               final args = settings.arguments;
               if (args is GameState) {
                 return EndGamePage(gameState: args);
+              } else {
+                return const Scaffold(
+                  body: Center(child: Text('Erreur: état du jeu manquant')),
+                );
+              }
+            };
+            break;
+          case '/game_history':
+            builder = (context) {
+              final args = settings.arguments;
+              if (args is GameState) {
+                return RoundsHistoryPage(gameState: args);
               } else {
                 return const Scaffold(
                   body: Center(child: Text('Erreur: état du jeu manquant')),
