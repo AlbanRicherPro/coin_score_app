@@ -7,6 +7,7 @@ import 'widgets/game_card.dart';
 import 'widgets/defiling_text.dart';
 import 'models/game_card_model.dart';
 import 'package:lottie/lottie.dart';
+import 'game_state_storage.dart';
 
 class PlayerPointsPage extends StatefulWidget {
   final GameState gameState;
@@ -362,21 +363,18 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                             alignment: WrapAlignment.center,
                             children: List.generate(10, (i) {
                               int cardNum = i + 1;
+                              String cardName = cardNum.toString();
                               return GameCard(
                                 card: GameCardModel(
                                   points: cardNum,
-                                  icon: Image.asset(
-                                    'assets/images/$cardNum.png',
-                                  ),
+                                  name: cardName,
                                 ),
                                 onTap: () {
                                   setState(() {
                                     currentPlayer.selectedCards.add(
                                       GameCardModel(
                                         points: cardNum,
-                                        icon: Image.asset(
-                                          'assets/images/$cardNum.png',
-                                        ),
+                                        name: cardName,
                                       ),
                                     );
                                   });
@@ -546,7 +544,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
     );
   }
 
-  void _onNextRoundPlayerTap(PlayerState finisher) {
+  void _onNextRoundPlayerTap(PlayerState finisher) async {
     setState(() {
       _playerFinishingTheRound = finisher;
       // First, mutate points
@@ -579,6 +577,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
       }
       _showOverlay = true;
     });
+    await GameStateStorage.save(widget.gameState);
     Future.delayed(Duration(seconds: 2), () {
       if (mounted) {
         setState(() {
@@ -595,7 +594,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
     });
   }
 
-  void _previousRound() {
+  void _previousRound() async {
     setState(() {
       for (var player in widget.gameState.players) {
         if (player.roundHistory.isNotEmpty) {
@@ -606,12 +605,14 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
       }
       widget.gameState.round = widget.gameState.round > 1 ? widget.gameState.round - 1 : 1;
     });
+    await GameStateStorage.save(widget.gameState);
   }
 
   void _endGame() async {
     await Navigator.of(
       context,
     ).pushNamed('/end_game', arguments: widget.gameState);
+    await GameStateStorage.clear();
     _previousRound();
   }
 

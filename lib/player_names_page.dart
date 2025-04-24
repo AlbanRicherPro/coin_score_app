@@ -1,6 +1,7 @@
 import 'package:coin_score_app/game_state.dart';
 import 'package:coin_score_app/player_state.dart';
 import 'package:flutter/material.dart';
+import 'game_state_storage.dart';
 
 class PlayerNamesPage extends StatefulWidget {
   final GameState gameState;
@@ -130,10 +131,11 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
                                             }
                                             return null;
                                           },
-                                          onChanged: (value) {
+                                          onChanged: (value) async {
                                             setState(() {
                                               widget.gameState.players[index].name = value;
                                             });
+                                            await GameStateStorage.save(widget.gameState);
                                           },
                                         ),
                                       ),
@@ -147,12 +149,13 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
                                           child: IconButton(
                                             icon:  Icon(Icons.delete, color: primaryColor),
                                             tooltip: 'Effacer',
-                                            onPressed: () {
+                                            onPressed: () async {
                                               setState(() {
                                                 widget.gameState.players.removeAt(index);
                                                 _controllers[index].dispose();
                                                 _controllers.removeAt(index);
                                               });
+                                              await GameStateStorage.save(widget.gameState);
                                             },
                                           ),
                                         ),

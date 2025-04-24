@@ -8,6 +8,8 @@ class GameCard extends StatelessWidget {
 
   const GameCard({super.key, required this.card, this.onTap, this.isSelected = false});
 
+  String get assetPath => 'assets/images/${card.name}.png';
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -36,7 +38,7 @@ class GameCard extends StatelessWidget {
           ),
           child: Center(
             child: Ink.image(
-              image: card.icon.image,
+              image: AssetImage(assetPath),
               fit: BoxFit.contain,
             ),
           ),
