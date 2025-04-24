@@ -38,7 +38,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _resumeGame() {
     if (_savedGameState != null) {
-      Navigator.of(context).pushNamed('/player_points', arguments: _savedGameState!);
+      Navigator.of(context).pushNamed(
+        '/new_game',
+        arguments: _savedGameState!,
+      );
     }
   }
 

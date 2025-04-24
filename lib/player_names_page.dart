@@ -14,6 +14,7 @@ class PlayerNamesPage extends StatefulWidget {
 class _PlayerNamesPageState extends State<PlayerNamesPage> {
   late List<TextEditingController> _controllers;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _isAutoForwarding = false;
 
   @override
   void initState() {
@@ -22,6 +23,12 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
       widget.gameState.players.length,
       (index) => TextEditingController(text: widget.gameState.players[index].name),
     );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.gameState.round > 1) {
+        setState(() => _isAutoForwarding = true);
+        Navigator.of(context).pushNamed('/player_points', arguments: widget.gameState).then((_) => setState(() => _isAutoForwarding = false));
+      }
+    });
   }
 
   @override
@@ -34,6 +41,12 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isAutoForwarding) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+        backgroundColor: Color(0xff4b9fc6),
+      );
+    }
     final primaryColor = const Color(0xff4b9fc6);
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(

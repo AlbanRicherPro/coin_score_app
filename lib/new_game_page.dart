@@ -14,6 +14,7 @@ class NewGamePage extends StatefulWidget {
 
 class _NewGamePageState extends State<NewGamePage> {
   late GameState _gameState;
+  bool _isAutoForwarding = false;
 
   @override
   void initState() {
@@ -28,10 +29,22 @@ class _NewGamePageState extends State<NewGamePage> {
           ),
           initialPoints: 150,
         );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_gameState.round > 1) {
+        setState(() => _isAutoForwarding = true);
+        Navigator.of(context).pushNamed('/player_names', arguments: _gameState).then((_) => setState(() => _isAutoForwarding = false));
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+      if (_isAutoForwarding) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+        backgroundColor: Color(0xff4b9fc6),
+      );
+    }
     final primaryColor = const Color(0xff4b9fc6);
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
