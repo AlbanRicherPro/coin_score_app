@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'modern_number_input.dart';
 import 'modern_switch.dart';
 import 'game_state.dart';
+import 'game_state_storage.dart';
 
 class NewGamePage extends StatefulWidget {
   final GameState? gameState;
@@ -28,18 +29,21 @@ class _NewGamePageState extends State<NewGamePage> {
             growable: true,
           ),
           initialPoints: 150,
+          onChanged: (gs) => GameStateStorage.save(gs),
         );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_gameState.round > 1) {
         setState(() => _isAutoForwarding = true);
-        Navigator.of(context).pushNamed('/player_names', arguments: _gameState).then((_) => setState(() => _isAutoForwarding = false));
+        Navigator.of(context)
+            .pushNamed('/player_names', arguments: _gameState)
+            .then((_) => setState(() => _isAutoForwarding = false));
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-      if (_isAutoForwarding) {
+    if (_isAutoForwarding) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
         backgroundColor: Color(0xff4b9fc6),

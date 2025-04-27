@@ -22,7 +22,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _checkSavedGameState() async {
-    final loaded = await GameStateStorage.load();
+    final loaded = await GameStateStorage.loadWithAutoSave();
     if (loaded != null && !loaded.endGame) {
       setState(() {
         _savedGameState = loaded;
@@ -38,10 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _resumeGame() {
     if (_savedGameState != null) {
-      Navigator.of(context).pushNamed(
-        '/new_game',
-        arguments: _savedGameState!,
-      );
+      Navigator.of(context).pushNamed('/new_game', arguments: _savedGameState!);
     }
   }
 
@@ -66,30 +63,53 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : FractionallySizedBox(
-              alignment: Alignment.topCenter,
-              heightFactor: 0.7, // Adjust this value for more/less top spacing
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/splash.png',
-                      width: screenWidth * 0.65,
-                      fit: BoxFit.contain,
-                    ),
-                    SizedBox(height: screenHeight * 0.1),
-                    if (_savedGameState != null && !_savedGameState!.endGame)
+      body:
+          _loading
+              ? const Center(child: CircularProgressIndicator())
+              : FractionallySizedBox(
+                alignment: Alignment.topCenter,
+                heightFactor:
+                    0.7, // Adjust this value for more/less top spacing
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/images/splash.png',
+                        width: screenWidth * 0.65,
+                        fit: BoxFit.contain,
+                      ),
+                      SizedBox(height: screenHeight * 0.1),
+                      if (_savedGameState != null && !_savedGameState!.endGame)
+                        SizedBox(
+                          width: 220,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              backgroundColor: Colors.amber,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              textStyle: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              elevation: 8,
+                            ),
+                            onPressed: _resumeGame,
+                            child: const Text('Reprendre la partie'),
+                          ),
+                        ),
+                      SizedBox(height: 24),
                       SizedBox(
                         width: 220,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 20),
-                            backgroundColor: Colors.amber,
-                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.white,
+                            foregroundColor: const Color(0xff4b9fc6),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
@@ -99,105 +119,106 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             elevation: 8,
                           ),
-                          onPressed: _resumeGame,
-                          child: const Text('Reprendre la partie'),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              PageRouteBuilder(
+                                transitionDuration: const Duration(
+                                  milliseconds: 700,
+                                ),
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        const NewGamePage(),
+                                transitionsBuilder: (
+                                  context,
+                                  animation,
+                                  secondaryAnimation,
+                                  child,
+                                ) {
+                                  final curved = CurvedAnimation(
+                                    parent: animation,
+                                    curve: Curves.easeInOutCubic,
+                                  );
+                                  return FadeTransition(
+                                    opacity: curved,
+                                    child: ScaleTransition(
+                                      scale: Tween<double>(
+                                        begin: 0.98,
+                                        end: 1.0,
+                                      ).animate(curved),
+                                      child: child,
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                          child: const Text('Nouvelle partie'),
                         ),
                       ),
-                    SizedBox(height: 24),
-                    SizedBox(
-                      width: 220,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          backgroundColor: Colors.white,
-                          foregroundColor: const Color(0xff4b9fc6),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          textStyle: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          elevation: 8,
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            PageRouteBuilder(
-                              transitionDuration: const Duration(milliseconds: 700),
-                              pageBuilder: (context, animation, secondaryAnimation) => const NewGamePage(),
-                              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                final curved = CurvedAnimation(parent: animation, curve: Curves.easeInOutCubic);
-                                return FadeTransition(
-                                  opacity: curved,
-                                  child: ScaleTransition(
-                                    scale: Tween<double>(begin: 0.98, end: 1.0).animate(curved),
-                                    child: child,
-                                  ),
-                                );
-                              },
+                      const SizedBox(height: 30),
+                      SizedBox(
+                        width: 220,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            backgroundColor: Colors.white,
+                            foregroundColor: const Color(0xff4b9fc6),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
                             ),
-                          );
-                        },
-                        child: const Text('Nouvelle partie'),
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    SizedBox(
-                      width: 220,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          backgroundColor: Colors.white,
-                          foregroundColor: const Color(0xff4b9fc6),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                            textStyle: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            elevation: 8,
                           ),
-                          textStyle: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          elevation: 8,
+                          onPressed: () {
+                            if (Theme.of(context).platform ==
+                                TargetPlatform.iOS) {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return CupertinoAlertDialog(
+                                    content: const Text(
+                                      'Bientôt disponible...',
+                                    ),
+                                    actions: [
+                                      CupertinoDialogAction(
+                                        onPressed:
+                                            () => Navigator.of(context).pop(),
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    content: const Text(
+                                      'Bientôt disponible...',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed:
+                                            () => Navigator.of(context).pop(),
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
+                          },
+                          child: const Text('Historique'),
                         ),
-                        onPressed: () {
-                          if (Theme.of(context).platform == TargetPlatform.iOS) {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return CupertinoAlertDialog(
-                                  content: const Text('Bientôt disponible...'),
-                                  actions: [
-                                    CupertinoDialogAction(
-                                      onPressed: () => Navigator.of(context).pop(),
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          } else {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  content: const Text('Bientôt disponible...'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.of(context).pop(),
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }
-                        },
-                        child: const Text('Historique'),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
     );
   }
 }

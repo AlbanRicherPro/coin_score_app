@@ -1,3 +1,4 @@
+import 'package:coin_score_app/game_state_storage.dart';
 import 'package:coin_score_app/player_state.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -159,7 +160,8 @@ class EndGamePage extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 18),
               ),
-              onPressed: () {
+              onPressed: () async {
+                await GameStateStorage.clear();
                 Navigator.of(context).pushNamedAndRemoveUntil(
                   '/new_game',
                   (route) => route.settings.name == '/home',
@@ -175,6 +177,7 @@ class EndGamePage extends StatelessWidget {
                             .toList(),
                     initialPoints: gameState.initialPoints,
                     mode: gameState.mode,
+                    onChanged: (gs) => GameStateStorage.save(gs),
                   ),
                 );
               },
@@ -195,7 +198,8 @@ class EndGamePage extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 18),
               ),
-              onPressed: () {
+              onPressed: () async {
+                await GameStateStorage.clear();
                 Navigator.of(
                   context,
                 ).pushNamedAndRemoveUntil('/home', (route) => false);

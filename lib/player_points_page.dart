@@ -7,7 +7,6 @@ import 'widgets/game_card.dart';
 import 'widgets/defiling_text.dart';
 import 'models/game_card_model.dart';
 import 'package:lottie/lottie.dart';
-import 'game_state_storage.dart';
 
 class PlayerPointsPage extends StatefulWidget {
   final GameState gameState;
@@ -23,11 +22,18 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
   bool _showOverlay = false;
   bool _isSelectedPlayerWinRound = false;
   PlayerState? _playerFinishingTheRound;
+  late GameState _gameState;
+
+  @override
+  void initState() {
+    super.initState();
+    _gameState = widget.gameState;
+  }
 
   @override
   Widget build(BuildContext context) {
     // Get selected cards for the current player
-    final currentPlayer = widget.gameState.players[_selectedIndex];
+    final currentPlayer = _gameState.players[_selectedIndex];
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -38,7 +44,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
         foregroundColor: Colors.white,
         elevation: 0,
         title: Text(
-          'Manche ${widget.gameState.round}',
+          'Manche ${_gameState.round}',
           style: TextStyle(
             color: Colors.white,
             fontSize: 28,
@@ -47,7 +53,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
         ),
         centerTitle: true,
         actions: [
-          if (widget.gameState.round > 1)
+          if (_gameState.round > 1)
             IconButton(
               icon: const Icon(Icons.history),
               color: Colors.white,
@@ -119,9 +125,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
             color: Colors.white,
             tooltip: 'Aide',
             onPressed: () {
-              Navigator.of(
-                context,
-              ).pushNamed('/help', arguments: widget.gameState);
+              Navigator.of(context).pushNamed('/help', arguments: _gameState);
             },
           ),
         ],
@@ -263,7 +267,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                       SizedBox(
                         width: 150,
                         child: ListView.builder(
-                          itemCount: widget.gameState.players.length,
+                          itemCount: _gameState.players.length,
                           padding: const EdgeInsets.only(bottom: 16),
                           itemBuilder: (context, index) {
                             return Container(
@@ -277,11 +281,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                                     SizedBox(
                                       width: 100,
                                       child: DefilingText(
-                                        text:
-                                            widget
-                                                .gameState
-                                                .players[index]
-                                                .name,
+                                        text: _gameState.players[index].name,
                                         enabled: _selectedIndex == index,
                                         style: const TextStyle(
                                           fontSize: 18,
@@ -293,7 +293,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                                     Row(
                                       children: [
                                         Text(
-                                          '${widget.gameState.players[index].points} pts',
+                                          '${_gameState.players[index].points} pts',
                                           style: TextStyle(
                                             fontSize: 14,
                                             color:
@@ -307,7 +307,7 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                                         Expanded(
                                           child: Center(
                                             child: Text(
-                                              '${widget.gameState.players[index].selectedPoints}',
+                                              '${_gameState.players[index].selectedPoints}',
                                               style: TextStyle(
                                                 fontSize: 20,
                                                 color:
@@ -449,17 +449,15 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
                               ),
                               const SizedBox(height: 16),
                               ...List.generate(
-                                widget.gameState.players.length,
+                                _gameState.players.length,
                                 (idx) => ListTile(
                                   title: Center(
-                                    child: Text(
-                                      widget.gameState.players[idx].name,
-                                    ),
+                                    child: Text(_gameState.players[idx].name),
                                   ),
                                   onTap:
                                       () => Navigator.of(
                                         context,
-                                      ).pop(widget.gameState.players[idx]),
+                                      ).pop(_gameState.players[idx]),
                                 ),
                               ),
                               const SizedBox(height: 16),
@@ -553,41 +551,44 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
         finisher.points -= _findBiggestPoints();
       } else {
         _isSelectedPlayerWinRound = true;
-        for (var player in widget.gameState.players) {
+        for (var player in _gameState.players) {
           if (finisher != player) {
             player.points -= player.selectedPoints;
           }
         }
       }
       // Now, save round history for each player AFTER mutating points
-      for (var player in widget.gameState.players) {
-        player.roundHistory.add(PlayerRoundHistoryEntry(
-          round: widget.gameState.round,
-          finisher: player == finisher,
-          winRound: (player == finisher && _isSelectedPlayerWinRound) || (player != finisher && !_isSelectedPlayerWinRound),
-          currentPoint: player.points,
-          roundPoint: player.selectedPoints,
-        ));
+      for (var player in _gameState.players) {
+        player.roundHistory.add(
+          PlayerRoundHistoryEntry(
+            round: _gameState.round,
+            finisher: player == finisher,
+            winRound:
+                (player == finisher && _isSelectedPlayerWinRound) ||
+                (player != finisher && !_isSelectedPlayerWinRound),
+            currentPoint: player.points,
+            roundPoint: player.selectedPoints,
+          ),
+        );
       }
-      for (var player in widget.gameState.players) {
+      for (var player in _gameState.players) {
         player.selectedCards.clear();
         if (player.points <= 0) {
-          widget.gameState.endGame = true;
+          _gameState.endGame = true;
         }
       }
       _showOverlay = true;
     });
-    await GameStateStorage.save(widget.gameState);
     Future.delayed(Duration(seconds: 2), () {
       if (mounted) {
         setState(() {
           _showOverlay = false;
           _playerFinishingTheRound = null;
           _selectedIndex = 0;
-          if (widget.gameState.endGame) {
+          if (_gameState.endGame) {
             _endGame();
           } else {
-            widget.gameState.round += 1;
+            _gameState.round += 1;
           }
         });
       }
@@ -596,34 +597,30 @@ class _PlayerPointsPageState extends State<PlayerPointsPage> {
 
   void _previousRound() async {
     setState(() {
-      for (var player in widget.gameState.players) {
+      for (var player in _gameState.players) {
         if (player.roundHistory.isNotEmpty) {
           var last = player.roundHistory.removeLast();
           player.points = last.currentPoint;
           player.selectedCards.clear();
         }
       }
-      widget.gameState.round = widget.gameState.round > 1 ? widget.gameState.round - 1 : 1;
+      _gameState.round = _gameState.round > 1 ? _gameState.round - 1 : 1;
     });
-    await GameStateStorage.save(widget.gameState);
   }
 
   void _endGame() async {
-    await Navigator.of(
-      context,
-    ).pushNamed('/end_game', arguments: widget.gameState);
-    await GameStateStorage.clear();
+    await Navigator.of(context).pushNamed('/end_game', arguments: _gameState);
     _previousRound();
   }
 
   PlayerState _findPlayerWithLowerPoints() {
-    return widget.gameState.players.reduce(
+    return _gameState.players.reduce(
       (a, b) => a.selectedPoints < b.selectedPoints ? a : b,
     );
   }
 
   int _findBiggestPoints() {
-    return widget.gameState.players
+    return _gameState.players
         .reduce((a, b) => a.selectedPoints > b.selectedPoints ? a : b)
         .selectedPoints;
   }
