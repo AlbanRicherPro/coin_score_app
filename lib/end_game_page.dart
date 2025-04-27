@@ -207,8 +207,8 @@ class _EndGamePageState extends State<EndGamePage> {
               onPressed: () async {
                 await GameStateStorage.clear();
                 if (!mounted) return;
-                // ignore: use_build_context_synchronously
                 Navigator.of(
+                // ignore: use_build_context_synchronously
                   context,
                 ).pushNamedAndRemoveUntil('/home', (route) => false);
               },
