@@ -4,16 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'game_state.dart';
 
-class EndGamePage extends StatelessWidget {
+class EndGamePage extends StatefulWidget {
   final GameState gameState;
 
   const EndGamePage({super.key, required this.gameState});
 
   @override
+  State<EndGamePage> createState() => _EndGamePageState();
+}
+
+class _EndGamePageState extends State<EndGamePage> {
+  @override
   Widget build(BuildContext context) {
-    // Sort players by points ascending (lowest points is the winner)
-    final playersSorted = [...gameState.players]
-      ..sort((a, b) => a.points.compareTo(b.points));
+    final playersSorted = [...widget.gameState.players]
+      ..sort((a, b) => b.points.compareTo(a.points));
     final winner = playersSorted.first;
 
     return Scaffold(
@@ -133,7 +137,7 @@ class EndGamePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(
                     context,
-                  ).pushNamed('/game_history', arguments: gameState);
+                  ).pushNamed('/game_history', arguments: widget.gameState);
                 },
               ),
             ),
@@ -162,21 +166,23 @@ class EndGamePage extends StatelessWidget {
               ),
               onPressed: () async {
                 await GameStateStorage.clear();
+                if (!mounted) return;
+                // ignore: use_build_context_synchronously
                 Navigator.of(context).pushNamedAndRemoveUntil(
                   '/new_game',
                   (route) => route.settings.name == '/home',
                   arguments: GameState(
                     players:
-                        gameState.players
+                        widget.gameState.players
                             .map(
                               (player) => PlayerState(
                                 name: player.name,
-                                points: gameState.initialPoints,
+                                points: widget.gameState.initialPoints,
                               ),
                             )
                             .toList(),
-                    initialPoints: gameState.initialPoints,
-                    mode: gameState.mode,
+                    initialPoints: widget.gameState.initialPoints,
+                    mode: widget.gameState.mode,
                     onChanged: (gs) => GameStateStorage.save(gs),
                   ),
                 );
@@ -200,6 +206,8 @@ class EndGamePage extends StatelessWidget {
               ),
               onPressed: () async {
                 await GameStateStorage.clear();
+                if (!mounted) return;
+                // ignore: use_build_context_synchronously
                 Navigator.of(
                   context,
                 ).pushNamedAndRemoveUntil('/home', (route) => false);
