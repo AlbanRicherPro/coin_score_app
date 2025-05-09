@@ -85,6 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         SizedBox(
                           width: 220,
                           child: ElevatedButton(
+                            key: const Key('resume_game_button'),
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 20),
                               backgroundColor: Colors.amber,
@@ -106,6 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       SizedBox(
                         width: 220,
                         child: ElevatedButton(
+                          key: const Key('new_game_button'),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 20),
                             backgroundColor: Colors.white,
@@ -159,6 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       SizedBox(
                         width: 220,
                         child: ElevatedButton(
+                          key: const Key('history_button'),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 20),
                             backgroundColor: Colors.white,

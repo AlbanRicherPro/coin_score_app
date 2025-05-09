@@ -134,6 +134,7 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
                                       ),
                                       Expanded(
                                         child: TextFormField(
+                                          key: Key('player${index + 1}_name'),
                                           autovalidateMode:
                                               AutovalidateMode
                                                   .onUserInteraction,
@@ -192,6 +193,7 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
                                           color: Colors.white,
                                           shape: const CircleBorder(),
                                           child: IconButton(
+                                            key: Key('delete_player${index + 1}'),
                                             icon: Icon(
                                               Icons.delete,
                                               color: primaryColor,
@@ -293,6 +295,7 @@ class _PlayerNamesPageState extends State<PlayerNamesPage> {
               child: SizedBox(
                 height: 60,
                 child: ElevatedButton.icon(
+                  key: const Key('continue_button'),
                   label: const Text('Continuer'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,

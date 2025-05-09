@@ -157,6 +157,7 @@ class _NewGamePageState extends State<NewGamePage> {
               child: SizedBox(
                 height: 60,
                 child: ElevatedButton.icon(
+                  key: const Key('continue_button'),
                   label: const Text('Continuer'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
